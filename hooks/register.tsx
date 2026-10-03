@@ -37,14 +37,10 @@ export const register: Register = (on, options) => {
   const yourMove = colour(options.your_move_color, DEFAULTS.yourMove)
   const isPinning = options.pin_waiting !== false
 
+  // Added whether or not a surface draws here: a cloud session viewed from the
+  // desktop app reports none, yet the person still reads the reply.
   on('prompt.compose', async ($, e, next) => {
     const result = await next(e)
-
-    // Headless runs draw no transcript, so the instruction would be wasted.
-    if (e.surfaces.length === 0) {
-      return result
-    }
-
     return { ...result, sections: [...result.sections, MARKER] }
   })
 

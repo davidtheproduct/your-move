@@ -51,12 +51,14 @@ Use a hex colour such as `#00aa88`. Anything else falls back to the default.
 
 The desktop app draws message rows itself and keeps their text but not a box drawn around them, so there the plugin marks the text instead. Your colour settings apply to the terminal borders and to the strip.
 
+**Cloud sessions** (the desktop app's Code tab with a cloud environment, or claude.ai/code) run on Anthropic's servers and are drawn by the app, so the markers and strip may not appear there. Claude still writes the **Your move:** block, since the instruction goes in either way.
+
 ## How it works
 
 - **The border** wraps the transcript row Claude Code draws for each message you send, from the terminal or the Remote Control bridge.
 - **The outline** starts at a line beginning `Your move` (bold or not, and with or without a `>` quote marker) and covers that paragraph plus any list or quoted lines directly under it. A blank line followed by ordinary text ends it, as does the first unquoted line after a quoted block. The lead is always drawn in bold, and quote markers are dropped since the outline replaces them.
 - **The strip** takes the first line of the latest reply's **Your move:** section, plus how many options it lists. It clears when you send your next message, and a reply that asks nothing leaves it empty. Subagent replies never pin anything.
-- **The instruction**: the plugin adds a short paragraph to Claude's system prompt asking it to put what needs you in a quote block led by **Your move:**, at most once per reply and only when something really needs you. It isn't added in headless runs (`claude -p`), which draw no transcript.
+- **The instruction**: the plugin adds a short paragraph to Claude's system prompt asking it to put what needs you in a quote block led by **Your move:**, at most once per reply and only when something really needs you.
 
 Only the drawing changes. Your stored conversation, and what Claude reads back from it, are untouched.
 

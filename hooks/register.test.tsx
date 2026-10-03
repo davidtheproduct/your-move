@@ -118,11 +118,11 @@ test('the pin can be turned off', { options: { pin_waiting: false } }, async ($,
   expect(await band.find({ type: 'Text', text: /Waiting on you/ })).toBeUndefined()
 })
 
-test('the system prompt asks Claude for the marker, only when a transcript is drawn', async ($, on) => {
+test('the system prompt asks Claude for the marker, with or without a drawn transcript', async ($, on) => {
   on('prompt.compose', () => ({ sections: [{ id: 'intro', text: 'base', scope: 'shared' }] }))
   const base = { model: 'claude-opus-5-5', promptModel: 'claude-opus-5-5', tools: [], outputStyle: null, traits: [] }
-  const drawn = await $.prompt.compose({ ...base, surfaces: ['terminal'] } as never)
-  expect(drawn.sections.at(-1)?.text).toContain('**Your move:**')
-  const headless = await $.prompt.compose({ ...base, surfaces: [] } as never)
-  expect(headless.sections.some(s => s.id === 'your-move:marker')).toBe(false)
+  for (const surfaces of [['terminal'], []]) {
+    const composed = await $.prompt.compose({ ...base, surfaces } as never)
+    expect(composed.sections.at(-1)?.text).toContain('**Your move:**')
+  }
 })
