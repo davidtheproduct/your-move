@@ -2,6 +2,8 @@
 
 **Find your messages. Never miss what Claude is waiting on you for.**
 
+![Your Move in Claude Code: a violet border around the user's prompt, and a red outline around the reply's "Your move:" section listing three name options](docs/screenshot.png)
+
 A Claude Code plugin for long sessions. When you scroll back, everything Claude says looks the same, and the one line where it asked you to decide something is easy to miss. Your Move fixes two things:
 
 - **Your messages get a border**, so you can find what you said at a glance.
