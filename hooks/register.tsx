@@ -1,8 +1,12 @@
+import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import { split } from './actions'
+import { quoteActions, split, summarize } from './actions'
 
 const DEFAULTS = { yourMessage: '#5b0a91', yourMove: '#ff2020' }
+
+// Claude's latest open ask, pinned above the prompt until the person replies.
+const waiting = atom({ plugin: 'your-move', key: 'waiting' } as const, null)
 
 // A colour the person set, if it is a hex colour; otherwise the default.
 const colour = (value: unknown, fallback: string) =>
@@ -31,6 +35,7 @@ const MARKER = {
 export const register: Register = (on, options) => {
   const yourMessage = colour(options.your_message_color, DEFAULTS.yourMessage)
   const yourMove = colour(options.your_move_color, DEFAULTS.yourMove)
+  const isPinning = options.pin_waiting !== false
 
   on('prompt.compose', async ($, e, next) => {
     const result = await next(e)
@@ -43,14 +48,69 @@ export const register: Register = (on, options) => {
     return { ...result, sections: [...result.sections, MARKER] }
   })
 
+  // The main loop's answer decides what is pinned: its ask, or nothing.
+  on('turn.complete', async ($, e, next) => {
+    const result = await next(e)
+
+    if (!e.agentId && !e.isAborted) {
+      const ask = summarize(e.answer)
+      await update($, waiting, () => ask)
+    }
+
+    return result
+  })
+
+  // The person answering clears the pin.
+  on('prompt.submit', async ($, e, next) => {
+    if (MINE.has(e.origin.kind)) {
+      await update($, waiting, () => null)
+    }
+
+    return next(e)
+  })
+
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const below = await next(e)
+    const ask = isPinning && !e.props.hasSurvey ? await read($, waiting) : null
+
+    if (!ask) {
+      return below
+    }
+
+    const { Box, Text } = $.ui.resolve(e)
+    const line = (
+      <Box flexDirection="row">
+        <Text color={yourMove} bold>
+          {'● Waiting on you: '}
+        </Text>
+        <Text>{ask}</Text>
+      </Box>
+    )
+
+    return below ? (
+      <Box flexDirection="column">
+        {line}
+        {below}
+      </Box>
+    ) : (
+      line
+    )
+  })
+
   on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
-    const drawn = await next(e)
     const isMine = MINE.has(e.props.origin.kind) && !e.props.task && !e.props.from
 
     if (!isMine) {
-      return drawn
+      return next(e)
     }
 
+    // The desktop app draws message rows itself and keeps their text, not a
+    // box around them, so off the terminal the mark goes into the text.
+    if (e.surface !== 'terminal') {
+      return next({ ...e, props: { ...e.props, text: `🟣 ${e.props.text}` } })
+    }
+
+    const drawn = await next(e)
     const { Box } = $.ui.resolve(e)
 
     return (
@@ -65,6 +125,10 @@ export const register: Register = (on, options) => {
 
     if (!parts.some(p => p.isAction)) {
       return next(e)
+    }
+
+    if (e.surface !== 'terminal') {
+      return next({ ...e, props: { ...e.props, text: quoteActions(e.props.text) } })
     }
 
     const { Box, Markdown } = $.ui.resolve(e)

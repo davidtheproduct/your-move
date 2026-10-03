@@ -8,6 +8,7 @@ A Claude Code plugin for long sessions. When you scroll back, everything Claude 
 
 - **Your messages get a border**, so you can find what you said at a glance.
 - **Anything Claude needs from you gets an outline.** The plugin asks Claude to open any decision, question or action for you with a **Your move:** line, and draws an outline around that section so it stands out from the reasoning around it.
+- **What's waiting on you stays pinned.** Claude's latest ask sits above the prompt as "● Waiting on you: …" until you reply, so an open decision never scrolls out of sight.
 
 Nothing else in the transcript changes. Background-task notices and messages from other agents keep their normal look, so the border only ever means "you said this", and the outline only ever means "this is on you".
 
@@ -35,14 +36,26 @@ Open `/config` and look for the two Your Move rows:
 | Setting | What it colours | Default |
 | --- | --- | --- |
 | Your messages: border colour | The border around messages you type | `#5b0a91` (deep violet) |
-| Your move: outline colour | The outline around what needs you | `#ff2020` (red) |
+| Your move: outline colour | The outline around what needs you, and the pinned strip | `#ff2020` (red) |
+| Pin what's waiting on you | The "Waiting on you" strip above the prompt | on |
 
 Use a hex colour such as `#00aa88`. Anything else falls back to the default.
+
+## Terminal and desktop app
+
+| | Terminal | Desktop app (Code tab), VS Code |
+| --- | --- | --- |
+| Your messages | Coloured border | 🟣 at the start |
+| What needs you | Coloured outline | Quote block led by 🟥 **Your move:** |
+| Waiting on you strip | Yes | Yes |
+
+The desktop app draws message rows itself and keeps their text but not a box drawn around them, so there the plugin marks the text instead. Your colour settings apply to the terminal borders and to the strip.
 
 ## How it works
 
 - **The border** wraps the transcript row Claude Code draws for each message you send, from the terminal or the Remote Control bridge.
 - **The outline** starts at a line beginning `Your move` (bold or not, and with or without a `>` quote marker) and covers that paragraph plus any list or quoted lines directly under it. A blank line followed by ordinary text ends it, as does the first unquoted line after a quoted block. The lead is always drawn in bold, and quote markers are dropped since the outline replaces them.
+- **The strip** takes the first line of the latest reply's **Your move:** section, plus how many options it lists. It clears when you send your next message, and a reply that asks nothing leaves it empty. Subagent replies never pin anything.
 - **The instruction**: the plugin adds a short paragraph to Claude's system prompt asking it to put what needs you in a quote block led by **Your move:**, at most once per reply and only when something really needs you. It isn't added in headless runs (`claude -p`), which draw no transcript.
 
 Only the drawing changes. Your stored conversation, and what Claude reads back from it, are untouched.
