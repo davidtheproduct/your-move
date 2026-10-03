@@ -1,8 +1,8 @@
 {
   "name": "your-move",
   "displayName": "Your Move",
-  "version": "0.5.1",
-  "description": "Find your messages. Never miss what Claude is waiting on you for. In Claude Code it borders your messages and outlines any part of Claude's reply that needs you to act; in claude.ai and Cowork it has Claude set those parts apart as a quote.",
+  "version": "0.6.0",
+  "description": "Find your messages. Never miss what Claude is waiting on you for. Borders your own messages and outlines any part of Claude's reply that needs you to act. Claude Code in the terminal only.",
   "author": {
     "name": "davidtheproduct",
     "url": "https://github.com/davidtheproduct"
@@ -29,13 +29,6 @@
       "title": "Your move: outline colour",
       "description": "Hex colour of the outline around the part of Claude's reply that needs you to act, e.g. #ff2020",
       "default": "#ff2020"
-    },
-    "pin_waiting": {
-      "type": "boolean",
-      "title": "Pin what's waiting on you",
-      "description": "Keep Claude's latest \"Your move\" ask pinned above the prompt until you reply",
-      "default": true
     }
-  },
-  "types": "./types/index.d.ts"
+  }
 }

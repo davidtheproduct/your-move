@@ -1,12 +1,8 @@
-import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import { quoteActions, split, summarize } from './actions'
+import { split } from './actions'
 
 const DEFAULTS = { yourMessage: '#5b0a91', yourMove: '#ff2020' }
-
-// Claude's latest open ask, pinned above the prompt until the person replies.
-const waiting = atom({ plugin: 'your-move', key: 'waiting' } as const, null)
 
 // A colour the person set, if it is a hex colour; otherwise the default.
 const colour = (value: unknown, fallback: string) =>
@@ -24,9 +20,8 @@ const MARKER = {
   text: [
     '# Flagging what needs the user',
     'When part of a reply needs the user to act, decide, or answer something you are waiting on,',
-    'put it in its own quote block whose first line starts with `> **Your move:**`, with any options',
-    'as a list inside the same quote (every line prefixed with `>`). The user\'s interface outlines',
-    'that block so it cannot be missed.',
+    'put it in its own section whose first line starts with `**Your move:**`, with any options as a',
+    'list directly beneath it. The user\'s interface outlines that section so it cannot be missed.',
     'Use at most one such section per reply, near the end, and only when something truly needs',
     'the user. Keep findings, reasoning and narration outside it.',
   ].join('\n'),
@@ -35,78 +30,26 @@ const MARKER = {
 export const register: Register = (on, options) => {
   const yourMessage = colour(options.your_message_color, DEFAULTS.yourMessage)
   const yourMove = colour(options.your_move_color, DEFAULTS.yourMove)
-  const isPinning = options.pin_waiting !== false
 
-  // Added whether or not a surface draws here: a cloud session viewed from the
-  // desktop app reports none, yet the person still reads the reply.
   on('prompt.compose', async ($, e, next) => {
     const result = await next(e)
+
+    // Headless runs draw no transcript, so the instruction would be wasted.
+    if (e.surfaces.length === 0) {
+      return result
+    }
+
     return { ...result, sections: [...result.sections, MARKER] }
   })
 
-  // The main loop's answer decides what is pinned: its ask, or nothing.
-  on('turn.complete', async ($, e, next) => {
-    const result = await next(e)
-
-    if (!e.agentId && !e.isAborted) {
-      const ask = summarize(e.answer)
-      await update($, waiting, () => ask)
-    }
-
-    return result
-  })
-
-  // The person answering clears the pin.
-  on('prompt.submit', async ($, e, next) => {
-    if (MINE.has(e.origin.kind)) {
-      await update($, waiting, () => null)
-    }
-
-    return next(e)
-  })
-
-  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const below = await next(e)
-    const ask = isPinning && !e.props.hasSurvey ? await read($, waiting) : null
-
-    if (!ask) {
-      return below
-    }
-
-    const { Box, Text } = $.ui.resolve(e)
-    const line = (
-      <Box flexDirection="row">
-        <Text color={yourMove} bold>
-          {'● Waiting on you: '}
-        </Text>
-        <Text>{ask}</Text>
-      </Box>
-    )
-
-    return below ? (
-      <Box flexDirection="column">
-        {line}
-        {below}
-      </Box>
-    ) : (
-      line
-    )
-  })
-
   on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
+    const drawn = await next(e)
     const isMine = MINE.has(e.props.origin.kind) && !e.props.task && !e.props.from
 
     if (!isMine) {
-      return next(e)
+      return drawn
     }
 
-    // The desktop app draws message rows itself and keeps their text, not a
-    // box around them, so off the terminal the mark goes into the text.
-    if (e.surface !== 'terminal') {
-      return next({ ...e, props: { ...e.props, text: `🟣 ${e.props.text}` } })
-    }
-
-    const drawn = await next(e)
     const { Box } = $.ui.resolve(e)
 
     return (
@@ -121,10 +64,6 @@ export const register: Register = (on, options) => {
 
     if (!parts.some(p => p.isAction)) {
       return next(e)
-    }
-
-    if (e.surface !== 'terminal') {
-      return next({ ...e, props: { ...e.props, text: quoteActions(e.props.text) } })
     }
 
     const { Box, Markdown } = $.ui.resolve(e)
