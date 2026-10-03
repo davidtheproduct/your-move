@@ -45,6 +45,19 @@ Use a hex colour such as `#00aa88`. Anything else falls back to the default.
 
 Only the drawing changes. Your stored conversation, and what Claude reads back from it, are untouched.
 
+## Using Codex, Cursor, Gemini CLI or Copilot?
+
+The border and outline need Claude Code: no other agent tool lets a plugin redraw its transcript (as of October 2026). The habit underneath them travels, though. Paste this into your project's `AGENTS.md`, the shared instructions file that Codex, Cursor, Gemini CLI, GitHub Copilot, opencode and others read, and the agent will flag what needs you with a bold **Your move:** line:
+
+```markdown
+## Flagging what needs me
+
+When part of a reply needs me to act, decide, or answer something you are waiting on,
+put it in its own section whose first line starts with `**Your move:**`, with any options
+as a list directly beneath it. Use at most one such section per reply, near the end, and
+only when something truly needs me. Keep findings, reasoning and narration outside it.
+```
+
 ## Develop
 
 ```bash
