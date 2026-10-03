@@ -20,8 +20,9 @@ const MARKER = {
   text: [
     '# Flagging what needs the user',
     'When part of a reply needs the user to act, decide, or answer something you are waiting on,',
-    'put it in its own section whose first line starts with `**Your move:**`, with any options as a',
-    'list directly beneath it. The user\'s interface outlines that section so it cannot be missed.',
+    'put it in its own quote block whose first line starts with `> **Your move:**`, with any options',
+    'as a list inside the same quote (every line prefixed with `>`). The user\'s interface outlines',
+    'that block so it cannot be missed.',
     'Use at most one such section per reply, near the end, and only when something truly needs',
     'the user. Keep findings, reasoning and narration outside it.',
   ].join('\n'),

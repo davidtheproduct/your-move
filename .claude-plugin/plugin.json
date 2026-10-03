@@ -1,13 +1,22 @@
 {
   "name": "your-move",
   "displayName": "Your Move",
-  "version": "0.3.0",
-  "description": "Find your messages. Never miss what Claude is waiting on you for. Borders your own messages and outlines any part of Claude's reply that needs you to act.",
-  "author": { "name": "davidtheproduct", "url": "https://github.com/davidtheproduct" },
+  "version": "0.4.0",
+  "description": "Find your messages. Never miss what Claude is waiting on you for. In Claude Code it borders your messages and outlines any part of Claude's reply that needs you to act; in claude.ai and Cowork it has Claude set those parts apart as a quote.",
+  "author": {
+    "name": "davidtheproduct",
+    "url": "https://github.com/davidtheproduct"
+  },
   "homepage": "https://github.com/davidtheproduct/your-move",
   "repository": "https://github.com/davidtheproduct/your-move",
   "license": "MIT",
-  "keywords": ["attention", "transcript", "readability", "decisions", "mod"],
+  "keywords": [
+    "attention",
+    "transcript",
+    "readability",
+    "decisions",
+    "mod"
+  ],
   "userConfig": {
     "your_message_color": {
       "type": "string",

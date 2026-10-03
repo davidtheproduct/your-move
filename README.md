@@ -42,10 +42,22 @@ Use a hex colour such as `#00aa88`. Anything else falls back to the default.
 ## How it works
 
 - **The border** wraps the transcript row Claude Code draws for each message you send, from the terminal or the Remote Control bridge.
-- **The outline** starts at a line beginning `Your move` (bold or not) and covers that paragraph plus any list directly under it. A blank line followed by ordinary text ends it. The lead is always drawn in bold.
-- **The instruction**: the plugin adds a short paragraph to Claude's system prompt asking it to use the **Your move:** marker, at most once per reply and only when something really needs you. It isn't added in headless runs (`claude -p`), which draw no transcript.
+- **The outline** starts at a line beginning `Your move` (bold or not, and with or without a `>` quote marker) and covers that paragraph plus any list or quoted lines directly under it. A blank line followed by ordinary text ends it, as does the first unquoted line after a quoted block. The lead is always drawn in bold, and quote markers are dropped since the outline replaces them.
+- **The instruction**: the plugin adds a short paragraph to Claude's system prompt asking it to put what needs you in a quote block led by **Your move:**, at most once per reply and only when something really needs you. It isn't added in headless runs (`claude -p`), which draw no transcript.
 
 Only the drawing changes. Your stored conversation, and what Claude reads back from it, are untouched.
+
+## Use it in claude.ai and Cowork
+
+The same plugin installs in claude.ai chat and Cowork, where it loads the bundled `your-move` skill. Claude then sets apart anything it needs from you as a quote block led by **Your move:**, which claude.ai draws with a bar down its left edge. The coloured border and outline are Claude Code only.
+
+1. In claude.ai or the desktop app, open **Customize > Plugins**.
+2. Add a marketplace from GitHub: `davidtheproduct/your-move`.
+3. Install **Your Move**.
+
+Chat applies a skill when its description fits the reply, so the quote appears most of the time rather than every time. In Claude Code the mod adds the instruction to every session.
+
+A plugin installed on your claude.ai account also appears in Claude Code at the next session start. If you've installed it there, you don't need the command-line install as well.
 
 ## Using Codex, Cursor, Gemini CLI or Copilot?
 

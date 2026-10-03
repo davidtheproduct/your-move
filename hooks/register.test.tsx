@@ -76,3 +76,14 @@ test('the system prompt asks Claude for the marker, only when a transcript is dr
   const headless = await $.prompt.compose({ ...base, surfaces: [] } as never)
   expect(headless.sections.some(s => s.id === 'your-move:marker')).toBe(false)
 })
+
+test('a quoted Your move block is outlined, with its quote markers dropped', async ($, on) => {
+  engineDraws(on)
+  const text = 'Here is what I found.\n\n> **Your move:** pick one\n> - option A\n> - option B\nBack to the analysis.'
+  for (const surface of SURFACES) {
+    const ui = await $.ui.mount({ plugin: 'your-move', surface, component: 'AssistantMessage', props: { text, isFirstOfReply: true } } as never)
+    expect((await ui.find({ type: 'Markdown' }))?.text).toBe('**Your move:** pick one\n- option A\n- option B')
+    expect((await ui.find({ type: 'Text', text: /Back to the analysis/ }))).toBeDefined()
+    await ui.unmount()
+  }
+})
