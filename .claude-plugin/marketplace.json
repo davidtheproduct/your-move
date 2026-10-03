@@ -1,0 +1,12 @@
+{
+  "name": "davidtheproduct",
+  "owner": { "name": "davidtheproduct", "url": "https://github.com/davidtheproduct" },
+  "description": "Claude Code plugins by davidtheproduct",
+  "plugins": [
+    {
+      "name": "your-move",
+      "source": "./",
+      "description": "Find your messages. Never miss what Claude is waiting on you for."
+    }
+  ]
+}

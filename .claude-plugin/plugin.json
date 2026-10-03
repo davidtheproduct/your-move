@@ -1,0 +1,25 @@
+{
+  "name": "your-move",
+  "displayName": "Your Move",
+  "version": "0.3.0",
+  "description": "Find your messages. Never miss what Claude is waiting on you for. Borders your own messages and outlines any part of Claude's reply that needs you to act.",
+  "author": { "name": "davidtheproduct", "url": "https://github.com/davidtheproduct" },
+  "homepage": "https://github.com/davidtheproduct/your-move",
+  "repository": "https://github.com/davidtheproduct/your-move",
+  "license": "MIT",
+  "keywords": ["attention", "transcript", "readability", "decisions", "mod"],
+  "userConfig": {
+    "your_message_color": {
+      "type": "string",
+      "title": "Your messages: border colour",
+      "description": "Hex colour of the border around messages you type, e.g. #5b0a91",
+      "default": "#5b0a91"
+    },
+    "your_move_color": {
+      "type": "string",
+      "title": "Your move: outline colour",
+      "description": "Hex colour of the outline around the part of Claude's reply that needs you to act, e.g. #ff2020",
+      "default": "#ff2020"
+    }
+  }
+}
